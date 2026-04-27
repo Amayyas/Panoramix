@@ -1,0 +1,61 @@
+name: Panoramix CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  check_coding_style:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check coding style
+        run: |
+          check.sh $(pwd) $(pwd)
+          if [ -s coding-style-reports.log ]; then
+            cat coding-style-reports.log
+            exit 1
+          fi
+
+  compile_panoramix:
+    needs: check_coding_style
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile project
+        run: make
+      - name: Check binary existence
+        run: |
+          if [ ! -f ./panoramix ]; then
+            echo "Binary panoramix not found!"
+            exit 1
+          fi
+
+  run_tests:
+    needs: compile_panoramix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run unit tests
+        run: make tests_run
+
+  push_mirror:
+    needs: [check_coding_style, compile_panoramix, run_tests]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ secrets.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.EPITECH_SSH_KEY }}
