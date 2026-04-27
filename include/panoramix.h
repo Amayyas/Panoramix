@@ -10,6 +10,8 @@
 
     #include <stdio.h>
     #include <stdlib.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 typedef struct params_s {
     int nb_villagers;
@@ -18,6 +20,27 @@ typedef struct params_s {
     int nb_refills;
 } params_t;
 
-int parse_args(int ac, char **av, params_t *params);
+typedef struct common_s {
+    params_t params;
+    int current_pot;
+    int refills_left;
+    pthread_mutex_t pot_mutex;
+    pthread_mutex_t print_mutex;
+    sem_t druid_sleep;
+    sem_t villager_wait;
+} common_t;
 
-#endif /* !PANORAMIX_H_ */
+typedef struct villager_s {
+    int id;
+    int fights_left;
+    pthread_t thread;
+    common_t *common;
+} villager_t;
+
+typedef struct druid_s {
+    pthread_t thread;
+    common_t *common;
+} druid_t;
+
+int parse_args(int ac, char **av, params_t *params);
+int init_resources(common_t *common, params_t *params);
