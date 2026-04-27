@@ -10,8 +10,8 @@
 
     #include <stdio.h>
     #include <stdlib.h>
-#include <pthread.h>
-#include <semaphore.h>
+    #include <pthread.h>
+    #include <semaphore.h>
 
 typedef struct params_s {
     int nb_villagers;
@@ -44,3 +44,5 @@ typedef struct druid_s {
 
 int parse_args(int ac, char **av, params_t *params);
 int init_resources(common_t *common, params_t *params);
+
+#endif /* !PANORAMIX_H_ */
