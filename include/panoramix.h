@@ -45,5 +45,6 @@ typedef struct druid_s {
 int parse_args(int ac, char **av, params_t *params);
 int init_resources(common_t *common, params_t *params);
 void *druid_thread(void *arg);
+void *villager_thread(void *arg);
 
 #endif /* !PANORAMIX_H_ */

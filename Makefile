@@ -7,7 +7,8 @@
 
 SRC	=	src/main.c	\
 		src/init.c	\
-		src/druid.c
+		src/druid.c	\
+		src/villager.c
 
 OBJ	=	$(SRC:.c=.o)
 
