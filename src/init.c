@@ -22,3 +22,11 @@ int init_resources(common_t *common, params_t *params)
         return (84);
     return (0);
 }
+
+void destroy_resources(common_t *common)
+{
+    pthread_mutex_destroy(&common->pot_mutex);
+    pthread_mutex_destroy(&common->print_mutex);
+    sem_destroy(&common->druid_sleep);
+    sem_destroy(&common->villager_wait);
+}

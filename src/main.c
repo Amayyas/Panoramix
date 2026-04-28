@@ -43,22 +43,38 @@ static void launch_villagers(villager_t *villagers, common_t *common)
     }
 }
 
+static void cleanup_villagers(villager_t *villagers, common_t *common)
+{
+    for (int i = 0; i < common->params.nb_villagers; i++)
+        pthread_join(villagers[i].thread, NULL);
+    free(villagers);
+    destroy_resources(common);
+}
+
+static int run_simulation(params_t *params, common_t *common)
+{
+    druid_t druid = {0};
+    villager_t *villagers = NULL;
+
+    druid.common = common;
+    pthread_create(&druid.thread, NULL, druid_thread, &druid);
+    villagers = malloc(sizeof(villager_t) * params->nb_villagers);
+    if (!villagers) {
+        destroy_resources(common);
+        return (84);
+    }
+    launch_villagers(villagers, common);
+    cleanup_villagers(villagers, common);
+    return (0);
+}
+
 int main(int ac, char **av)
 {
     params_t params = {0};
     common_t common = {0};
-    druid_t druid = {0};
-    villager_t *villagers = NULL;
 
     if (parse_args(ac, av, &params) == 84 ||
         init_resources(&common, &params) == 84)
         return (84);
-    druid.common = &common;
-    pthread_create(&druid.thread, NULL, druid_thread, &druid);
-    villagers = malloc(sizeof(villager_t) * params.nb_villagers);
-    launch_villagers(villagers, &common);
-    for (int i = 0; i < params.nb_villagers; i++)
-        pthread_join(villagers[i].thread, NULL);
-    free(villagers);
-    return (0);
+    return (run_simulation(&params, &common));
 }
