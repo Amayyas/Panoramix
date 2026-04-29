@@ -12,6 +12,7 @@ int init_resources(common_t *common, params_t *params)
     common->params = *params;
     common->current_pot = params->pot_size;
     common->refills_left = params->nb_refills;
+    common->stop_druid = 0;
     if (pthread_mutex_init(&common->pot_mutex, NULL) != 0)
         return (84);
     if (pthread_mutex_init(&common->print_mutex, NULL) != 0)
