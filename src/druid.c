@@ -14,6 +14,8 @@ void *druid_thread(void *arg)
     printf("Druid: I'm ready... but sleepy...\n");
     while (druid->common->refills_left > 0) {
         sem_wait(&druid->common->druid_sleep);
+        if (druid->common->stop_druid)
+            break;
         druid->common->current_pot = druid->common->params.pot_size;
         druid->common->refills_left--;
         printf("Druid: Ah! Yes, yes, I'm awake! Working on it! ");
@@ -21,7 +23,8 @@ void *druid_thread(void *arg)
             druid->common->refills_left);
         if (druid->common->refills_left == 0)
             printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
-        sem_post(&druid->common->villager_wait);
+        for (int i = 0; i < druid->common->params.nb_villagers; i++)
+            sem_post(&druid->common->villager_wait);
     }
     return (NULL);
 }
