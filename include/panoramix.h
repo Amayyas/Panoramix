@@ -24,6 +24,7 @@ typedef struct common_s {
     params_t params;
     int current_pot;
     int refills_left;
+    int stop_druid;
     pthread_mutex_t pot_mutex;
     pthread_mutex_t print_mutex;
     sem_t druid_sleep;
