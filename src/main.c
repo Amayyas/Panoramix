@@ -48,7 +48,13 @@ static void cleanup_villagers(villager_t *villagers, common_t *common)
     for (int i = 0; i < common->params.nb_villagers; i++)
         pthread_join(villagers[i].thread, NULL);
     free(villagers);
-    destroy_resources(common);
+}
+
+static void stop_druid(common_t *common, druid_t *druid)
+{
+    common->stop_druid = 1;
+    sem_post(&common->druid_sleep);
+    pthread_join(druid->thread, NULL);
 }
 
 static int run_simulation(params_t *params, common_t *common)
@@ -60,11 +66,16 @@ static int run_simulation(params_t *params, common_t *common)
     pthread_create(&druid.thread, NULL, druid_thread, &druid);
     villagers = malloc(sizeof(villager_t) * params->nb_villagers);
     if (!villagers) {
+        common->stop_druid = 1;
+        sem_post(&common->druid_sleep);
+        pthread_join(druid.thread, NULL);
         destroy_resources(common);
         return (84);
     }
     launch_villagers(villagers, common);
     cleanup_villagers(villagers, common);
+    stop_druid(common, &druid);
+    destroy_resources(common);
     return (0);
 }
 
