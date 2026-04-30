@@ -7,14 +7,17 @@
 
 #include "panoramix.h"
 
-static void handle_refill(villager_t *v)
+static int handle_refill(villager_t *v)
 {
     if (v->common->current_pot == 0) {
+        if (v->common->refills_left == 0)
+            return (0);
         printf("Villager %d: Hey Pano wake up! We need more potion.\n",
             v->id);
         sem_post(&v->common->druid_sleep);
         sem_wait(&v->common->villager_wait);
     }
+    return (1);
 }
 
 void *villager_thread(void *arg)
@@ -26,7 +29,10 @@ void *villager_thread(void *arg)
         pthread_mutex_lock(&v->common->pot_mutex);
         printf("Villager %d: I need a drink... I see %d servings left.\n",
             v->id, v->common->current_pot);
-        handle_refill(v);
+        if (!handle_refill(v)) {
+            pthread_mutex_unlock(&v->common->pot_mutex);
+            break;
+        }
         v->common->current_pot--;
         pthread_mutex_unlock(&v->common->pot_mutex);
         v->fights_left--;
