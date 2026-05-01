@@ -14,9 +14,9 @@ OBJ	=	$(SRC:.c=.o)
 
 NAME	=	panoramix
 
-CC	=	gcc
+CC	?= gcc
 
-CFLAGS	=	-W -Wall -Wextra -pthread -I./include
+CFLAGS	= 	-W -Wall -Wextra -pthread -I./include
 
 all:	$(NAME)
 
@@ -32,6 +32,9 @@ fclean: clean
 re:	fclean all
 
 tests_run:
-	@echo "Tests to implement..."
+	@echo "Building unit tests..."
+	$(CC) $(CFLAGS) tests/test_parse_args.c -o tests/unit_tests -lcriterion -pthread
+	@echo "Running unit tests..."
+	./tests/unit_tests
 
 .PHONY: all clean fclean re tests_run
