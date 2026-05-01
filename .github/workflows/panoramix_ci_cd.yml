@@ -52,6 +52,10 @@ jobs:
           sudo add-apt-repository "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-20 main"
           sudo apt-get update
           sudo apt-get install -y clang-20
+      - name: Install Criterion
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcriterion-dev
       - name: Run unit tests
         run: make tests_run
 
