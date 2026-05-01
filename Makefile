@@ -32,8 +32,9 @@ fclean: clean
 re:	fclean all
 
 tests_run:
+	@mkdir -p tests
 	@echo "Building unit tests..."
-	$(CC) $(CFLAGS) tests/test_parse_args.c -o tests/unit_tests -lcriterion -pthread
+	$(CC) $(CFLAGS) -Dmain=panoramix_main src/main.c src/init.c src/druid.c src/villager.c tests/test_parse_args.c -o tests/unit_tests -lcriterion -pthread
 	@echo "Running unit tests..."
 	./tests/unit_tests
 
