@@ -21,6 +21,7 @@ CFLAGS	= 	-W -Wall -Wextra -pthread -I./include
 COVERAGE_NAME	=	tests/coverage_tests
 UNIT_TESTS_NAME	=	unit_tests
 TESTS_SRCS	=	$(wildcard tests/test_*.c)
+STYLE_REPORT_DIR	=	.reports
 
 all:	$(NAME)
 
@@ -60,4 +61,25 @@ coverage:
 	@rm -f $(COVERAGE_NAME) tests/coverage_tests-*.gcda \
 		tests/coverage_tests-*.gcno
 
-.PHONY: all clean fclean re tests_run coverage
+style:
+	@echo "Running Epitech coding style checker..."
+	@$(MAKE) fclean >/dev/null
+	@mkdir -p $(STYLE_REPORT_DIR)
+	@rm -f $(STYLE_REPORT_DIR)/coding-style-reports.log
+	@docker run --rm \
+		-v "$(CURDIR)":/mnt/delivery \
+		-v "$(CURDIR)/$(STYLE_REPORT_DIR)":/mnt/reports \
+		ghcr.io/epitech/coding-style-checker:latest /mnt/delivery /mnt/reports
+	@REPORT_FILE="$(CURDIR)/$(STYLE_REPORT_DIR)/coding-style-reports.log"; \
+	if [ ! -f "$$REPORT_FILE" ]; then \
+		echo "Style checker did not generate $$REPORT_FILE"; \
+		exit 1; \
+	fi; \
+	COUNT=$$(wc -l < "$$REPORT_FILE"); \
+	echo "$$COUNT coding style error(s) reported in $$REPORT_FILE"; \
+	if [ "$$COUNT" -ne 0 ]; then \
+		tail -n 20 "$$REPORT_FILE"; \
+		exit 1; \
+	fi
+
+.PHONY: all clean fclean re tests_run coverage style
