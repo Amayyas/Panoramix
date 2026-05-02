@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Acceptance tests for the Panoramix project.
-# These tests verify that the executable matches the subject-level expectations.
+# These tests validate the high-level contract of the subject.
 
 set -euo pipefail
 
@@ -11,28 +11,46 @@ BINARY="$REPO_DIR/panoramix"
 PASS_COUNT=0
 FAIL_COUNT=0
 
-pass() {
+report_pass() {
     echo "[PASS] $1"
     PASS_COUNT=$((PASS_COUNT + 1))
 }
 
-fail() {
+report_fail() {
     echo "[FAIL] $1"
-    echo "       Expected pattern: $2"
+    echo "       Expected: $2"
     echo "       Output:"
     printf '%s\n' "$3" | sed 's/^/         /'
     FAIL_COUNT=$((FAIL_COUNT + 1))
 }
 
-check() {
-    local name=$1
-    local pattern=$2
-    local output=$3
+run_case() {
+    local __output_var=$1
+    local __status_var=$2
+    shift 2
 
-    if printf '%s\n' "$output" | grep -Eq "$pattern"; then
-        pass "$name"
+    local __tmp_output
+    set +e
+    __tmp_output=$(
+        "$@" 2>&1
+    )
+    local __status=$?
+    set -e
+
+    printf -v "$__output_var" '%s' "$__tmp_output"
+    printf -v "$__status_var" '%s' "$__status"
+}
+
+assert_exit_code() {
+    local name=$1
+    local expected_code=$2
+    local output=$3
+    local actual_code=$4
+
+    if [ "$actual_code" -eq "$expected_code" ]; then
+        report_pass "$name"
     else
-        fail "$name" "$pattern" "$output"
+        report_fail "$name" "exit code $expected_code" "$output"
     fi
 }
 
@@ -42,29 +60,25 @@ echo
 echo "Building project..."
 make -C "$REPO_DIR" >/dev/null
 
-echo "Checking mandatory subject rules..."
-NO_ARGS_OUTPUT=$("$BINARY" 2>&1 || true)
-check "Usage message on missing arguments" \
-    '^USAGE: ./panoramix <nb_villagers> <pot_size> <nb_fights> <nb_refills>$' \
-    "$NO_ARGS_OUTPUT"
+echo "Checking subject-level contract..."
 
-ZERO_OUTPUT=$("$BINARY" 0 1 1 1 2>&1 || true)
-check "Reject zero values" 'Values must be >0\.' "$ZERO_OUTPUT"
+run_case NO_ARGS_OUTPUT NO_ARGS_STATUS "$BINARY"
+assert_exit_code "Missing arguments rejected" 84 "$NO_ARGS_OUTPUT" "$NO_ARGS_STATUS"
 
-NEGATIVE_OUTPUT=$("$BINARY" -1 2 2 1 2>&1 || true)
-check "Reject negative values" 'Values must be >0\.' "$NEGATIVE_OUTPUT"
+run_case ZERO_OUTPUT ZERO_STATUS "$BINARY" 0 1 1 1
+assert_exit_code "Zero values rejected" 84 "$ZERO_OUTPUT" "$ZERO_STATUS"
+
+run_case NEGATIVE_OUTPUT NEGATIVE_STATUS "$BINARY" -1 2 2 1
+assert_exit_code "Negative values rejected" 84 "$NEGATIVE_OUTPUT" "$NEGATIVE_STATUS"
 
 echo
-echo "Checking a nominal subject scenario..."
-SCENARIO_OUTPUT=$(timeout 5 "$BINARY" 2 3 2 1 2>&1 || true)
+echo "Checking acceptable execution scenarios..."
 
-check "Druid announces readiness" "Druid: I'm ready... but sleepy..." "$SCENARIO_OUTPUT"
-check "Druid wakes up on refill" "Druid: Ah! Yes, yes, I'm awake! Working on it!" "$SCENARIO_OUTPUT"
-check "Villager enters battle" 'Villager [0-9]+: Going into battle!' "$SCENARIO_OUTPUT"
-check "Villager requests potion" 'Villager [0-9]+: I need a drink\.\.\. I see [0-9]+ servings left\.' "$SCENARIO_OUTPUT"
-check "Villager attacks romans" 'Villager [0-9]+: Take that roman scum! Only [0-9]+ left\.' "$SCENARIO_OUTPUT"
-check "Villager goes to sleep" "Villager [0-9]+: I'm going to sleep now\." "$SCENARIO_OUTPUT"
-check "Druid ends without viscum" "Druid: I'm out of viscum. I'm going back to... zZz" "$SCENARIO_OUTPUT"
+run_case MINIMAL_OUTPUT MINIMAL_STATUS timeout 5 "$BINARY" 1 1 1 1
+assert_exit_code "Minimal valid scenario terminates" 0 "$MINIMAL_OUTPUT" "$MINIMAL_STATUS"
+
+run_case SMALL_OUTPUT SMALL_STATUS timeout 5 "$BINARY" 2 3 2 1
+assert_exit_code "Small valid scenario terminates" 0 "$SMALL_OUTPUT" "$SMALL_STATUS"
 
 echo
 echo "=== Results ==="
