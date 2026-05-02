@@ -61,6 +61,14 @@ coverage:
 	@rm -f $(COVERAGE_NAME) tests/coverage_tests-*.gcda \
 		tests/coverage_tests-*.gcno
 
+functional:
+	@echo "Running functional tests..."
+	@./scripts/functional_tests.sh
+
+acceptance:
+	@echo "Running acceptance tests..."
+	@./scripts/acceptance_tests.sh
+
 style:
 	@echo "Running Epitech coding style checker..."
 	@$(MAKE) fclean >/dev/null
@@ -82,4 +90,4 @@ style:
 		exit 1; \
 	fi
 
-.PHONY: all clean fclean re tests_run coverage style
+.PHONY: all clean fclean re tests_run coverage functional acceptance style
