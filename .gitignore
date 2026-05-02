@@ -35,6 +35,10 @@
 *.i*86
 *.x86_64
 *.hex
+panoramix
+unit_tests
+coding-style-reports.log
+.reports/
 
 # Debug files
 *.dSYM/
