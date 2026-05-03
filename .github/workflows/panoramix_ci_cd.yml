@@ -71,6 +71,38 @@ jobs:
       - name: Run acceptance tests
         run: make acceptance
 
+  run_integration_tests:
+    needs: compile_panoramix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release software-properties-common
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-20 main"
+          sudo apt-get update
+          sudo apt-get install -y clang-20
+      - name: Run integration tests
+        run: make integration
+
+  run_regression_tests:
+    needs: compile_panoramix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-20
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg lsb-release software-properties-common
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/$(lsb_release -sc)/ llvm-toolchain-$(lsb_release -sc)-20 main"
+          sudo apt-get update
+          sudo apt-get install -y clang-20
+      - name: Run regression tests
+        run: make regression
+
   run_tests:
     needs: compile_panoramix
     runs-on: ubuntu-latest
@@ -92,7 +124,7 @@ jobs:
         run: make tests_run
 
   push_mirror:
-    needs: [check_coding_style, compile_panoramix, run_functional_tests, run_acceptance_tests, run_tests]
+    needs: [check_coding_style, compile_panoramix, run_functional_tests, run_acceptance_tests, run_integration_tests, run_regression_tests, run_tests]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
