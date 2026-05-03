@@ -69,6 +69,14 @@ acceptance:
 	@echo "Running acceptance tests..."
 	@./scripts/acceptance_tests.sh
 
+integration:
+	@echo "Running integration tests..."
+	@./scripts/integration_tests.sh
+
+regression:
+	@echo "Running regression tests..."
+	@./scripts/regression_tests.sh
+
 style:
 	@echo "Running Epitech coding style checker..."
 	@$(MAKE) fclean >/dev/null
@@ -90,4 +98,5 @@ style:
 		exit 1; \
 	fi
 
-.PHONY: all clean fclean re tests_run coverage functional acceptance style
+.PHONY: all clean fclean re tests_run coverage functional
+.PHONY: acceptance integration regression style
