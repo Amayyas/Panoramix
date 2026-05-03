@@ -77,6 +77,14 @@ regression:
 	@echo "Running regression tests..."
 	@./scripts/regression_tests.sh
 
+smoke:
+	@echo "Running smoke tests..."
+	@./scripts/smoke_tests.sh
+
+stress:
+	@echo "Running stress tests..."
+	@./scripts/stress_tests.sh
+
 style:
 	@echo "Running Epitech coding style checker..."
 	@$(MAKE) fclean >/dev/null
@@ -99,4 +107,4 @@ style:
 	fi
 
 .PHONY: all clean fclean re tests_run coverage functional
-.PHONY: acceptance integration regression style
+.PHONY: acceptance integration regression smoke stress style
