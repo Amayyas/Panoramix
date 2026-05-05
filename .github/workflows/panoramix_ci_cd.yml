@@ -33,7 +33,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Compile project
         run: make
       - name: Check binary existence
@@ -51,7 +53,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run functional tests
         run: make functional
 
@@ -63,7 +67,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run acceptance tests
         run: make acceptance
 
@@ -75,7 +81,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run integration tests
         run: make integration
 
@@ -87,7 +95,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run regression tests
         run: make regression
 
@@ -99,7 +109,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run smoke tests
         run: make smoke
 
@@ -111,7 +123,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Run stress tests
         run: make stress
 
@@ -123,7 +137,9 @@ jobs:
       - name: Install epiclang
         run: |
           sudo apt-get update
-          sudo apt-get install -y epiclang
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
       - name: Install Criterion
         run: |
           sudo apt-get update
