@@ -14,7 +14,7 @@ OBJ	=	$(SRC:.c=.o)
 
 NAME	=	panoramix
 
-CC = clang-20
+CC = epiclang
 
 CFLAGS	= 	-W -Wall -Wextra -pthread -I./include
 
