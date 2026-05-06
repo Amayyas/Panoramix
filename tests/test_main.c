@@ -14,3 +14,9 @@ Test(main_suite, valid_simulation_completes)
 
     cr_assert_eq(main(5, argv), 0);
 }
+
+Test(main_suite, invalid_args_return_84)
+{
+    char *argv[] = {"./panoramix", "2", NULL};
+    cr_assert_eq(main(2, argv), 84);
+}

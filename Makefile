@@ -54,10 +54,10 @@ coverage:
 	./$(COVERAGE_NAME)
 	@echo "Global coverage summary..."
 	gcovr --root . --exclude 'tests/.*' \
-		--gcov-executable 'llvm-cov gcov' --print-summary
+		--gcov-executable 'gcov' --print-summary
 	@echo "Coverage by file..."
 	gcovr --root . --exclude 'tests/.*' \
-		--gcov-executable 'llvm-cov gcov'
+		--gcov-executable 'gcov'
 	@rm -f $(COVERAGE_NAME) tests/coverage_tests-*.gcda \
 		tests/coverage_tests-*.gcno
 
