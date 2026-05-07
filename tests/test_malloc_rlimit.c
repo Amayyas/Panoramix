@@ -7,6 +7,8 @@
 #include "panoramix.h"
 #include <sys/resource.h>
 
+int main(int ac, char **av);
+
 Test(malloc_rlimit_suite, main_handles_malloc_failure_rlimit)
 {
     struct rlimit rl;
