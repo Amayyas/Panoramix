@@ -33,6 +33,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
+	rm -rf docs/
 
 re:	fclean all
 
@@ -106,5 +107,9 @@ style:
 		exit 1; \
 	fi
 
+doc:
+	@echo "Running Doxygen..."
+	@doxygen Doxyfile
+
 .PHONY: all clean fclean re tests_run coverage functional
-.PHONY: acceptance integration regression smoke stress style
+.PHONY: acceptance integration regression smoke stress style doc

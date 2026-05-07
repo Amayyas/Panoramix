@@ -1,0 +1,11 @@
+PROJECT_NAME           = "Panoramix"
+PROJECT_BRIEF          = "Concurrent C programming simulation (Threads, Mutexes, Semaphores)"
+OUTPUT_DIRECTORY       = docs
+INPUT                  = src include
+RECURSIVE              = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+OPTIMIZE_OUTPUT_FOR_C  = YES
+EXTRACT_ALL            = YES
+QUIET                  = YES
+HAVE_DOT               = NO
