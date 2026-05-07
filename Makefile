@@ -21,6 +21,9 @@ CFLAGS	= 	-W -Wall -Wextra -pthread -I./include
 COVERAGE_NAME	=	tests/coverage_tests
 UNIT_TESTS_NAME	=	unit_tests
 TESTS_SRCS	=	$(wildcard tests/test_*.c)
+TESTS_BUILD	= 	$(CC) $(CFLAGS) --coverage -Dmain=panoramix_main \
+		src/main.c src/init.c src/druid.c src/villager.c \
+		$(TESTS_SRCS) -lcriterion -pthread
 STYLE_REPORT_DIR	=	.reports
 
 all:	$(NAME)
@@ -39,18 +42,14 @@ re:	fclean all
 
 tests_run:
 	@echo "Building unit tests..."
-	$(CC) $(CFLAGS) -Dmain=panoramix_main \
-		src/main.c src/init.c src/druid.c src/villager.c \
-		$(TESTS_SRCS) -o $(UNIT_TESTS_NAME) -lcriterion -pthread
+	$(TESTS_BUILD) -o $(UNIT_TESTS_NAME)
 	@echo "Running unit tests..."
 	./$(UNIT_TESTS_NAME)
 
 coverage:
 	@mkdir -p tests
 	@echo "Building coverage binary..."
-	$(CC) $(CFLAGS) --coverage -Dmain=panoramix_main \
-		src/main.c src/init.c src/druid.c src/villager.c \
-		$(TESTS_SRCS) -o $(COVERAGE_NAME) -lcriterion -pthread
+	$(TESTS_BUILD) -o $(COVERAGE_NAME)
 	@echo "Running coverage binary..."
 	./$(COVERAGE_NAME)
 	@echo "Global coverage summary..."
