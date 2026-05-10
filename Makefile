@@ -10,6 +10,13 @@ SRC	=	src/main.c	\
 		src/druid.c	\
 		src/villager.c
 
+BONUS_ANALYZER_SRC	=	tools/log_analyzer_main.c \
+			tools/log_analyzer_parse.c \
+			tools/log_analyzer_checks.c \
+			tools/log_analyzer_output.c \
+			tools/log_analyzer_issues.c
+BONUS_ANALYZER_NAME	=	panoramix_log_analyzer
+
 OBJ	=	$(SRC:.c=.o)
 
 NAME	=	panoramix
@@ -31,11 +38,15 @@ all:	$(NAME)
 $(NAME):	$(OBJ)
 	$(CC) -o $(NAME) $(OBJ) $(CFLAGS)
 
+$(BONUS_ANALYZER_NAME):	$(BONUS_ANALYZER_SRC)
+	$(CC) -o $(BONUS_ANALYZER_NAME) $(BONUS_ANALYZER_SRC) -W -Wall -Wextra
+
 clean:
 	rm -f $(OBJ) $(UNIT_TESTS_NAME)
 
 fclean: clean
 	rm -f $(NAME)
+	rm -f $(BONUS_ANALYZER_NAME)
 	rm -rf docs/
 
 re:	fclean all
@@ -110,5 +121,18 @@ doc:
 	@echo "Running Doxygen..."
 	@doxygen Doxyfile
 
+bonus_analyzer: $(BONUS_ANALYZER_NAME)
+
+bonus_demo: $(NAME) $(BONUS_ANALYZER_NAME)
+	@echo "Running a demo scenario and analyzing the output..."
+	@./$(NAME) 5 3 4 2 | tee /tmp/panoramix_demo.log >/dev/null
+	@./$(BONUS_ANALYZER_NAME) /tmp/panoramix_demo.log 5 2
+
+bonus_demo_json: $(NAME) $(BONUS_ANALYZER_NAME)
+	@echo "Running a demo scenario and exporting JSON analysis..."
+	@./$(NAME) 5 3 4 2 | tee /tmp/panoramix_demo.log >/dev/null
+	@./$(BONUS_ANALYZER_NAME) /tmp/panoramix_demo.log 5 2 --json
+
 .PHONY: all clean fclean re tests_run coverage functional
 .PHONY: acceptance integration regression smoke stress style doc
+.PHONY: bonus_analyzer bonus_demo bonus_demo_json

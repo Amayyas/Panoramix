@@ -147,8 +147,36 @@ jobs:
       - name: Run unit tests
         run: make tests_run
 
+  compile_bonus_analyzer:
+    needs: compile_panoramix
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install epiclang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
+      - name: Compile bonus analyzer
+        run: make bonus_analyzer
+
+  test_bonus_analyzer:
+    needs: compile_bonus_analyzer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install epiclang
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc
+          sudo ln -sf "$(command -v gcc)" /usr/local/bin/epiclang
+          epiclang --version
+      - name: Test bonus analyzer
+        run: make bonus_demo
+
   push_mirror:
-    needs: [check_coding_style, compile_panoramix, run_functional_tests, run_acceptance_tests, run_integration_tests, run_regression_tests, run_smoke_tests, run_stress_tests, run_tests]
+    needs: [check_coding_style, compile_panoramix, run_functional_tests, run_acceptance_tests, run_integration_tests, run_regression_tests, run_smoke_tests, run_stress_tests, run_tests, compile_bonus_analyzer, test_bonus_analyzer]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
