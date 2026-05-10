@@ -10,7 +10,8 @@
 3. [Installation & Compilation](#-installation--compilation)
 4. [Usage](#-usage)
 5. [Tests](#-tests)
-6. [Documentation](#-documentation)
+6. [Bonus Tool: Log Analyzer](#-bonus-tool-log-analyzer)
+7. [Documentation](#-documentation)
 
 ---
 
@@ -82,6 +83,48 @@ This project contains multiple test suites. You can run them via the `Makefile`:
 - **Code coverage**: `make coverage`
 - **Functional tests**: `make functional`
 - **Style tests (Epitech Norm)**: `make style`
+
+---
+
+## Bonus Tool: Log Analyzer
+
+This project now includes a standalone C bonus tool that analyzes a Panoramix execution log and checks basic invariants.
+
+Build the analyzer:
+```bash
+make bonus_analyzer
+```
+
+Generate and analyze a demo log in one command:
+```bash
+make bonus_demo
+```
+
+Generate JSON output (useful for CI or dashboards):
+```bash
+make bonus_demo_json
+```
+
+Manual usage:
+```bash
+./panoramix 5 3 4 2 | tee /tmp/run.log
+./panoramix_log_analyzer /tmp/run.log 5 2
+./panoramix_log_analyzer /tmp/run.log 5 2 --json
+./panoramix_log_analyzer /tmp/run.log 5 2 --strict
+```
+
+Analyzer arguments:
+- `log_file`: output file to inspect.
+- `expected_villagers` (optional): expected number of villagers that should have both battle and sleep lines.
+- `max_refills` (optional): maximum allowed number of druid refill lines.
+- `--json` (optional): prints a machine-readable JSON report.
+- `--strict` (optional): treats warnings as errors.
+
+Advanced checks included:
+- Per-villager event tracking (`battle`, `sleep`, `wake-up`).
+- Sequence anomaly detection (example: sleep before battle).
+- Out-of-range villager ID detection (when `expected_villagers` is provided).
+- Global quality score from `0` to `100` based on warnings/errors.
 
 ---
 
